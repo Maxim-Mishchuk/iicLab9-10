@@ -1,0 +1,31 @@
+services:
+ fluentd:
+  build: './fluentd'
+  links:
+   - elasticsearch
+  ports:
+   - '24224:24224'
+   - '24224:24224/udp'
+  volumes:
+   - './fluentd:/fluentd/etc'
+   - './logs:/fluentd/logs'
+
+ elasticsearch:
+  image: 'elasticsearch:7.17.21'
+  environment:
+   - discovery.type=single-node
+   - path.data=/usr/share/elasticsearch/data
+  expose:
+   - '9200'
+  ports:
+   - '9200:9200'
+   - '9300:9300'
+  volumes:
+   - ./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+
+ kibana:
+   image: 'kibana:7.17.21'
+   links:
+    - elasticsearch
+   ports:
+    - 5601:5601
